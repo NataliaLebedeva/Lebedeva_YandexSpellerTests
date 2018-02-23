@@ -21,3 +21,5 @@ hs_err_pid*
 src/.DS_Store
 src/main/java/beans/
 target/
+.idea
+*.iml
