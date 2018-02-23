@@ -12,6 +12,7 @@ import io.restassured.specification.RequestSpecification;
 import io.restassured.specification.ResponseSpecification;
 import org.apache.http.HttpStatus;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -29,6 +30,7 @@ public class YandexSpellerApi {
     //builder pattern
     private YandexSpellerApi() {
     }
+
     private HashMap<String, String> params = new HashMap<String, String>();
 
     public static class ApiBuilder {
@@ -43,13 +45,19 @@ public class YandexSpellerApi {
             return this;
         }
 
-        public ApiBuilder options(String options) {
-            spellerApi.params.put(PARAM_OPTIONS, options);
+        public ApiBuilder options(Options... options) {
+            Integer sum = Arrays.stream(options).mapToInt(Options::getOptionsCode).sum();
+            spellerApi.params.put(PARAM_OPTIONS, sum.toString());
             return this;
         }
 
         public ApiBuilder language(Languages language) {
             spellerApi.params.put(PARAM_LANG, language.languageCode);
+            return this;
+        }
+
+        public ApiBuilder format(Format format) {
+            spellerApi.params.put(FORMAT, format.formatParam);
             return this;
         }
 
@@ -59,6 +67,7 @@ public class YandexSpellerApi {
                     .log().all()
                     .get(YANDEX_SPELLER_API_URI).prettyPeek();
         }
+
     }
 
     public static ApiBuilder with() {

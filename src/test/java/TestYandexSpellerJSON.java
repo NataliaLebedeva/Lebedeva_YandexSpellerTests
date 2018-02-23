@@ -10,6 +10,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import static core.YandexSpellerConstants.*;
+import static core.YandexSpellerConstants.Options.IGNORE_CAPITALIZATION;
+import static core.YandexSpellerConstants.Options.IGNORE_DIGITS;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.lessThan;
@@ -132,7 +134,7 @@ public class TestYandexSpellerJSON {
     public void reachBuilderUsage(){
                 YandexSpellerApi.with()
                         .language(Languages.UK)
-                        .options("5")
+                        .options(IGNORE_CAPITALIZATION)
                         .text(WRONG_WORD_UK)
                         .callApi()
                 .then().specification(YandexSpellerApi.successResponse());
@@ -146,11 +148,11 @@ public class TestYandexSpellerJSON {
                 YandexSpellerApi.getYandexSpellerAnswers(
                         YandexSpellerApi.with().text("motherr fatherr," + WRONG_WORD_EN).callApi());
         assertThat("expected number of answers is wrong.", answers.size(), equalTo(3));
-        assertThat(answers.get(0).word, equalTo("motherr"));
-        assertThat(answers.get(1).word, equalTo("fatherr"));
-        assertThat(answers.get(0).s.get(0), equalTo("mother"));
-        assertThat(answers.get(1).s.get(0), equalTo("father"));
-        assertThat(answers.get(2).s.get(0), equalTo(RIGHT_WORD_EN));
+        assertThat(answers.get(0).getWord(), equalTo("motherr"));
+        assertThat(answers.get(1).getWord(), equalTo("fatherr"));
+        assertThat(answers.get(0).getS().get(0), equalTo("mother"));
+        assertThat(answers.get(1).getS().get(0), equalTo("father"));
+        assertThat(answers.get(2).getS().get(0), equalTo(RIGHT_WORD_EN));
     }
 
 
@@ -160,7 +162,7 @@ public class TestYandexSpellerJSON {
                 YandexSpellerApi.getYandexSpellerAnswers(
                         YandexSpellerApi.with().
                                 text(WORD_WITH_LEADING_DIGITS)
-                                .options("2")
+                                .options(IGNORE_DIGITS)
                                 .callApi());
         assertThat("expected number of answers is wrong.", answers.size(), equalTo(0));
     }
@@ -171,7 +173,7 @@ public class TestYandexSpellerJSON {
                 YandexSpellerApi.getYandexSpellerAnswers(
                         YandexSpellerApi.with().
                                 text(WORD_WITH_WRONG_CAPITAL)
-                                .options("512")
+                                .options(IGNORE_CAPITALIZATION)
                                 .callApi());
         assertThat("expected number of answers is wrong.", answers.size(), equalTo(0));
     }
