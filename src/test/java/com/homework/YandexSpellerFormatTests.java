@@ -5,10 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.Matchers;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static core.YandexSpellerApi.getYandexSpellerAnswers;
 import static core.YandexSpellerApi.with;
@@ -37,9 +41,8 @@ public class YandexSpellerFormatTests {
         return new Object[][]{
                 {new RequestFormat("retorn", "<p class='%s'></p>"), "return"},
                 {new RequestFormat("keywurd", "<li class='%s'></li>"), "keyword"},
-                {new RequestFormat("tabl", "<%s class='raw'></%s>"), "table"},
-                {new RequestFormat("bodi", "<%s class='raw'></%s>"), "body"},
-                {new RequestFormat("квартирко", "<span class='%s'></span>"), "квартира"},
+                {new RequestFormat("tabl", "<%s clas='raw'>"), "table"},
+                {new RequestFormat("bodi", "<%s clas='raw'>"), "body"},
                 {new RequestFormat("сабака", "<span class='%s'></span>"), "собака"}
         };
     }
@@ -64,7 +67,10 @@ public class YandexSpellerFormatTests {
     public void plainFormatTest(RequestFormat requestFormat, String correctWord) {
         List<YandexSpellerAnswer> answers = getYandexSpellerAnswers(with()
                 .text(requestFormat.getHtml()).format(PLAIN).callApi());
+        List<String> allSuggestions = answers.stream().map(YandexSpellerAnswer::getS).flatMap(Collection::stream).collect(Collectors.toList());
 
+        MatcherAssert.assertThat(answers.size(), Matchers.greaterThan(1));
+        MatcherAssert.assertThat(allSuggestions, hasItem(containsString(correctWord)));
     }
 
     @Setter
